@@ -1,0 +1,13 @@
+ray==2.8.1
+ray[default]
+ray[rllib]
+ray[tune]
+ray[train]
+ray[data]
+torch
+torchvision
+torchaudio
+gymnasium==0.28.1
+gymnasium[atari]
+gymnasium[accept-rom-license]
+pygame>=2.1.3

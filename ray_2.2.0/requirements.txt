@@ -1,0 +1,15 @@
+ray==2.2.0
+ray[default]
+ray[train]
+ray[tune]
+ray[rllib]
+ray[data]
+torch
+torchvision
+torchaudio
+tensorflow_probability
+pydantic<2
+pandas==2.1.4
+gym<0.24
+gym[atari]
+gym[accept-rom-license]

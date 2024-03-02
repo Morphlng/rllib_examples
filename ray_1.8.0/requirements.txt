@@ -1,0 +1,14 @@
+ray==1.8.0
+ray[default]
+ray[train]
+ray[tune]
+ray[rllib]
+ray[data]
+torch
+torchvision
+torchaudio
+gym==0.22.0
+gym[atari]
+gym[accept-rom-license]
+aiohttp<=3.7.4
+redis==4.1.4
