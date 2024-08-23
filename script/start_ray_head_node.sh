@@ -26,6 +26,37 @@ run_in_new_screen() {
     fi
 }
 
+# Function to get IP addresses
+get_ip_addresses() {
+    ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'
+}
+
+# Function to select IP address
+select_ip_address() {
+    local ips=($(get_ip_addresses))
+    local default_ip=$(echo "${ips[@]}" | tr ' ' '\n' | grep '^192\.168' | head -n 1)
+
+    if [ ${#ips[@]} -eq 0 ]; then
+        echo "No IP addresses found." >&2
+        exit 1
+    elif [ ${#ips[@]} -eq 1 ]; then
+        echo "${ips[0]}"
+    else
+        if [ -n "$default_ip" ]; then
+            echo "Multiple IP addresses found. Using default IP: $default_ip" >&2
+            echo "$default_ip"
+        else
+            echo "Multiple IP addresses found. Please choose one:" >&2
+            select ip in "${ips[@]}"; do
+                if [ -n "$ip" ]; then
+                    echo "$ip"
+                    break
+                fi
+            done
+        fi
+    fi
+}
+
 # Parse command-line options
 while getopts ":e:p:h" opt; do
     case ${opt} in
@@ -51,6 +82,21 @@ while getopts ":e:p:h" opt; do
         ;;
     esac
 done
+
+# Get the IP address
+MAIN_IP=$(select_ip_address)
+if [ -z "$MAIN_IP" ]; then
+    log "Failed to select an IP address. Exiting."
+    exit 1
+fi
+
+# Set environment variables for Grafana and Prometheus
+export RAY_GRAFANA_HOST="http://${MAIN_IP}:3000"
+export RAY_PROMETHEUS_HOST="http://${MAIN_IP}:9090"
+
+log "Using IP address: $MAIN_IP"
+log "Grafana will be available at: $RAY_GRAFANA_HOST"
+log "Prometheus will be available at: $RAY_PROMETHEUS_HOST"
 
 # Activate Conda environment
 eval "$(conda shell.bash hook)"
