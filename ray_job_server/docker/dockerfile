@@ -1,0 +1,40 @@
+# 使用 Ray 的基础镜像作为起点
+FROM rayproject/ray:2.8.1
+
+# 更新 pip 并更改 PyPI 镜像源
+RUN python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
+        && python3 -m pip install --upgrade pip \
+        && python3 -m pip install --timeout=120 \
+                "ray==2.8.1" \
+                ray[default] \
+                ray[rllib] \
+                ray[tune] \
+                ray[train] \
+                ray[data] \
+                ray[client] \
+                torch \
+                torchvision \
+                torchaudio \
+                tensorboard \
+                tensorflow_probability \
+                onnx \
+                onnxruntime \
+                "gymnasium==0.28.1" \
+                gymnasium[atari] \
+                gymnasium[accept-rom-license] \
+                "pygame>=2.1.0" \
+                opencv-python \
+                pettingzoo \
+                supersuit \
+                tabulate \
+                "numpy<2.0" \
+                pandas \
+                matplotlib \
+                orjson \
+                "setuptools<70.0.0"
+
+# 设置工作目录
+WORKDIR /workspace
+
+# 暴露端口
+EXPOSE 6006 6379 8265 10001

@@ -1,0 +1,81 @@
+{
+    "task_id": "fe6503f9-602d-11ef-9344-c85ea95f6813",
+    "task_name": "pretrain_example",
+    "task_type": "LocalPathPlanning",
+    "task_stage": "pretrain",
+    "task_config": {
+        "pretrain": {
+            "agent_model": {
+                "encoder": {
+                    "network_type": "MLP",
+                    "hidden_layers": [
+                        128,
+                        256,
+                        256,
+                        128
+                    ],
+                    "activation": "relu"
+                },
+                "core": {
+                    "network_type": "LSTM",
+                    "num_layers": 1,
+                    "hidden_size": 128
+                },
+                "critic": {
+                    "network_type": "MLP",
+                    "hidden_layers": [
+                        128,
+                        128
+                    ],
+                    "activation": "relu"
+                }
+            },
+            "algorithm": "DQN",
+            "observation_space": "LocalPathPlanningObs",
+            "action_space": "LocalPathPlanningAction",
+            "reward_function": {
+                "type": "LocalPathPlanningReward",
+                "coefficients": {
+                    "collision": -1,
+                    "time": -0.1,
+                    "distance": 0.1
+                }
+            },
+            "pretrain_policy": {
+                "type": "PrioritizedExperienceReplay",
+                "config": {
+                    "capacity": 100000,
+                    "prioritized_replay_alpha": 0.6,
+                    "prioritized_replay_beta": 0.4
+                }
+            },
+            "metrics": [
+                "episode_len_mean"
+            ],
+            "dataset": {
+                "id": "fe6503f9-602d-11ef-9344-c85ea95f6814",
+                "data_path": "/mnt/ray/dataset/path_planning/example"
+            },
+            "hyperparams": {
+                "lr": 0.00001,
+                "train_batch_size": 256,
+                "gamma": 0.99
+            },
+            "stop": {
+                "time_total_s": 86400,
+                "training_iteration": 100,
+                "episode_reward_mean": 200
+            },
+            "checkpoint": {
+                "checkpoint_at_end": true,
+                "checkpoint_frequency": 20,
+                "checkpoint_score_attribute": "episode_reward_mean",
+                "checkpoint_score_order": "max",
+                "num_to_keep": 10
+            }
+        },
+        "evolve": {},
+        "transfer": {},
+        "inference": {}
+    }
+}

@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  ray-head:
+    image: my-ray-cluster:latest
+    command: >
+      sh -c "
+        # Start Ray
+        ray start --head --port=6379 --dashboard-host=0.0.0.0 --include-dashboard=true &&
+
+        # Run sync script 5 minutes
+        while true; do
+          rsync -av /tmp/ray/session_latest/logs/job-driver-* /mnt/ray/ray_logs/
+          sleep 300
+        done &
+        
+        # Keep container running
+        tail -f /dev/null
+      "
+    ports:
+      - "6006:6006"  # Tensorboard
+      - "6379:6379"  # Ray 头节点端口
+      - "8265:8265"  # Ray Dashboard
+      - "8000:8000"  # Prometheus 数据的可视化服务
+      - "9091:9091"  # 修改后的端口
+      - "10001:10001"  # Ray Client port
+    shm_size: '10gb'
+    volumes:
+      - /workspace/ray:/mnt/ray
+
+  ray-worker:
+    image: my-ray-cluster:latest
+    command: >
+      sh -c "ray start --address='ray-head:6379' &&
+             tail -f /dev/null"
+    depends_on:
+      - ray-head
+    shm_size: '10gb'
+    volumes:
+      - /workspace/ray:/mnt/ray

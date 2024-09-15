@@ -1,0 +1,5 @@
+{
+    "dashboard_address": "http://192.168.5.4:8265",
+    "ray_address": "ray://192.168.5.4:10001",
+    "tensorboard_address": "http://192.168.5.4:6006"
+}

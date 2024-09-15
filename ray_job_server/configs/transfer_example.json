@@ -1,0 +1,134 @@
+{
+    "task_id": "fe6503f9-602d-11ef-9344-c85ea95f6815",
+    "task_name": "transfer_example",
+    "task_type": "LocalPathPlanning",
+    "task_stage": "transfer",
+    "task_config": {
+        "pretrain": {
+            "agent_model": {
+                "encoder": {
+                    "network_type": "MLP",
+                    "hidden_layers": [
+                        128,
+                        256,
+                        256,
+                        128
+                    ],
+                    "activation": "relu"
+                },
+                "core": {
+                    "network_type": "LSTM",
+                    "num_layers": 1,
+                    "hidden_size": 128
+                },
+                "critic": {
+                    "network_type": "MLP",
+                    "hidden_layers": [
+                        128,
+                        128
+                    ],
+                    "activation": "relu"
+                }
+            },
+            "algorithm": "DQN",
+            "observation_space": "LocalPathPlanningObs",
+            "action_space": "LocalPathPlanningAction",
+            "reward_function": {
+                "type": "LocalPathPlanningReward",
+                "coefficients": {
+                    "collision": -1,
+                    "time": -0.1,
+                    "distance": 0.1
+                }
+            },
+            "pretrain_policy": {
+                "type": "PrioritizedExperienceReplay",
+                "config": {
+                    "capacity": 100000,
+                    "prioritized_replay_alpha": 0.6,
+                    "prioritized_replay_beta": 0.4
+                }
+            },
+            "metrics": [
+                "run_time"
+            ],
+            "dataset": {
+                "id": "fe6503f9-602d-11ef-9344-c85ea95f6814",
+                "data_path": "abs/path/to/data/directory"
+            },
+            "hyperparams": {
+                "lr": 0.00001,
+                "train_batch_size": 256,
+                "gamma": 0.99
+            },
+            "stop": {
+                "time_total_s": 86400,
+                "training_iteration": 10000,
+                "episode_reward_mean": 200
+            },
+            "checkpoint": {
+                "checkpoint_at_end": true,
+                "checkpoint_frequency": 100,
+                "checkpoint_score_attribute": "episode_reward_mean",
+                "checkpoint_score_order": "max",
+                "num_to_keep": 10
+            }
+        },
+        "evolve": {},
+        "transfer": {
+            "scenario": {
+                "scenario_file": "scenario.xml"
+            },
+            "base_model": {
+                "checkpoint_dir": "/mnt/ray/ray_results/evolve_example/XXX/checkpoint_YYYY",
+                "policy_name": "default_policy"
+            },
+            "evolve_policy": {
+                "type": "SelfSupervised",
+                "config": {
+                    "model": {
+                        "network_type": "AutoEncoder",
+                        "encoder_hidden_layers": [
+                            128,
+                            256,
+                            256,
+                            128
+                        ],
+                        "decoder_hidden_layers": [
+                            128,
+                            256,
+                            256,
+                            128
+                        ],
+                        "activation": "relu"
+                    }
+                }
+            },
+            "metrics": [
+                "episode_len_mean"
+            ],
+            "hyperparams": {
+                "lr": 0.00001,
+                "train_batch_size": 256,
+                "gamma": 0.99
+            },
+            "stop": {
+                "time_total_s": 86400,
+                "training_iteration": 1000,
+                "episode_reward_mean": 400
+            },
+            "checkpoint": {
+                "checkpoint_at_end": true,
+                "checkpoint_frequency": 20,
+                "checkpoint_score_attribute": "episode_reward_mean",
+                "checkpoint_score_order": "max",
+                "num_to_keep": 10
+            },
+            "resources": {
+                "num_workers": 1,
+                "num_gpus": 0
+            }
+        },
+        "inference": {}
+    }
+}
