@@ -20,10 +20,10 @@ class CustomCallback(DefaultCallbacks):
             algorithm._storage.current_checkpoint_index -= 1
 
 
-def create_checkpoint_loading_callback(checkpoint_dir: str, base_cls=CustomCallback):
+def checkpoint_callback(checkpoint_dir: str, base_cls=CustomCallback):
     """Create a callback class that loads a checkpoint before training."""
 
-    class CheckpointLoadingCallback(base_cls):
+    class LoadCheckpointCallback(base_cls):
         def __init__(self):
             self.logger = logging.getLogger(__name__)
 
@@ -38,4 +38,4 @@ def create_checkpoint_loading_callback(checkpoint_dir: str, base_cls=CustomCallb
             )
             self.logger.info(f"Loaded checkpoint from {checkpoint_dir}")
 
-    return CheckpointLoadingCallback
+    return LoadCheckpointCallback

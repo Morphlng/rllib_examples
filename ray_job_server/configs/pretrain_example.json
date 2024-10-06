@@ -1,7 +1,7 @@
 {
     "task_id": "fe6503f9-602d-11ef-9344-c85ea95f6813",
     "task_name": "pretrain_example",
-    "task_type": "LocalPathPlanning",
+    "task_type": "GlobalPathPlanning",
     "task_stage": "pretrain",
     "task_config": {
         "pretrain": {
@@ -31,14 +31,21 @@
                 }
             },
             "algorithm": "DQN",
-            "observation_space": "LocalPathPlanningObs",
-            "action_space": "LocalPathPlanningAction",
-            "reward_function": {
-                "type": "LocalPathPlanningReward",
-                "coefficients": {
-                    "collision": -1,
-                    "time": -0.1,
-                    "distance": 0.1
+            "observation": {
+                "type": "relative",
+                "params": {}
+            },
+            "action": {
+                "type": "default",
+                "params": {}
+            },
+            "reward": {
+                "type": "default",
+                "params": {
+                    "collision": -100,
+                    "reach_goal": 200,
+                    "step_cost": -1,
+                    "distance_coefficient": -1
                 }
             },
             "pretrain_policy": {
@@ -54,7 +61,7 @@
             ],
             "dataset": {
                 "id": "fe6503f9-602d-11ef-9344-c85ea95f6814",
-                "data_path": "/mnt/ray/dataset/path_planning/example"
+                "data_path": "/mnt/ray/dataset/global_path_planning/example"
             },
             "hyperparams": {
                 "lr": 0.00001,

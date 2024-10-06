@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+ <root>
+     <simualator>
+         <map_size>100</map_size>
+         <map_size>100</map_size>
+         <map_size>20</map_size>
+         <num_buildings>15</num_buildings>
+         <num_dynamic_obstacles>0</num_dynamic_obstacles>
+         <building_min_height>5</building_min_height>
+         <building_max_height>15</building_max_height>
+     </simualator>
+ </root>

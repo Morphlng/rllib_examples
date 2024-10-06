@@ -5,6 +5,7 @@ FROM rayproject/ray:2.8.1
 RUN python3 -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
         && python3 -m pip install --upgrade pip \
         && python3 -m pip install --timeout=120 \
+                git+https://gitee.com/Morphlng/uav_3d_env.git \
                 "ray==2.8.1" \
                 ray[default] \
                 ray[rllib] \

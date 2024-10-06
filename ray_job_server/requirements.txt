@@ -1,3 +1,4 @@
+git+https://gitee.com/Morphlng/uav_3d_env.git
 ray==2.8.1
 ray[default]
 ray[train]

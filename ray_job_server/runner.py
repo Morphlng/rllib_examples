@@ -8,7 +8,7 @@ from ray.tune.registry import get_trainable_cls
 
 from customization import (
     CustomCallback,
-    create_checkpoint_loading_callback,
+    checkpoint_callback,
     report_progress,
 )
 
@@ -44,19 +44,20 @@ class ExperimentRunner:
         base_model_config: dict = stage_config.get("base_model", {})
         resource_config: dict = stage_config.get("resources", {})
         algorithm: str = self.task_config["pretrain"]["algorithm"]
+        env_config = self._parse_env_config(stage_config)
 
         trainable = get_trainable_cls(algorithm)
         default_config: AlgorithmConfig = trainable.get_default_config()
         if base_model_config:
             ckpt_dir = base_model_config["checkpoint_dir"]
-            callback = create_checkpoint_loading_callback(ckpt_dir)
+            callback = checkpoint_callback(ckpt_dir)
         else:
             callback = CustomCallback
 
         algo_config = (
             default_config.framework("torch")
             .training(model={"custom_model": None, "custom_model_config": {}})
-            .environment(self.task_type)
+            .environment(self.task_type, env_config=env_config)
             .debugging(log_level="ERROR")
             .callbacks(callback)
             .rollouts(num_rollout_workers=resource_config.get("num_workers", 1))
@@ -199,6 +200,21 @@ class ExperimentRunner:
         algorithm = self.task_config["pretrain"]["algorithm"]
         tuner = tune.Tuner.restore(path, get_trainable_cls(algorithm))
         return tuner.fit()
+
+    def _parse_env_config(self, stage_config: dict):
+        pretrian_config = self.task_config["pretrain"]
+        env_config = {
+            "observation": pretrian_config["observation"],
+            "action": pretrian_config["action"],
+            "reward": pretrian_config["reward"],
+        }
+
+        if "scenario" in stage_config:
+            scenario_config = stage_config["scenario"]
+            # suppose scenario is already parsed into a dict
+            env_config.update(scenario_config)
+
+        return env_config
 
 
 if __name__ == "__main__":

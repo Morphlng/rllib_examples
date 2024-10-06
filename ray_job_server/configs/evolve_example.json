@@ -1,7 +1,7 @@
 {
     "task_id": "fe6503f9-602d-11ef-9344-c85ea95f6814",
     "task_name": "evolve_example",
-    "task_type": "LocalPathPlanning",
+    "task_type": "GlobalPathPlanning",
     "task_stage": "evolve",
     "task_config": {
         "pretrain": {
@@ -31,14 +31,21 @@
                 }
             },
             "algorithm": "DQN",
-            "observation_space": "LocalPathPlanningObs",
-            "action_space": "LocalPathPlanningAction",
-            "reward_function": {
-                "type": "LocalPathPlanningReward",
-                "coefficients": {
-                    "collision": -1,
-                    "time": -0.1,
-                    "distance": 0.1
+            "observation": {
+                "type": "relative",
+                "params": {}
+            },
+            "action": {
+                "type": "default",
+                "params": {}
+            },
+            "reward": {
+                "type": "default",
+                "params": {
+                    "collision": -100,
+                    "reach_goal": 200,
+                    "step_cost": -1,
+                    "distance_coefficient": -1
                 }
             },
             "pretrain_policy": {
@@ -50,7 +57,7 @@
                 }
             },
             "metrics": [
-                "run_time"
+                "episode_reward_mean"
             ],
             "dataset": {
                 "id": "fe6503f9-602d-11ef-9344-c85ea95f6814",
@@ -75,7 +82,19 @@
             }
         },
         "evolve": {
-            "scenario": "scenario.xml",
+            "scenario": {
+                "simualator": {
+                    "map_size": [
+                        100,
+                        100,
+                        20
+                    ],
+                    "num_buildings": 10,
+                    "num_dynamic_obstacles": 0,
+                    "building_min_height": 5,
+                    "building_max_height": 10
+                }
+            },
             "base_model": {
                 "checkpoint_dir": "/mnt/ray/ray_results/pretrain_example/XXX/checkpoint_YYYY",
                 "policy_name": "default_policy"

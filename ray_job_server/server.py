@@ -126,6 +126,7 @@ class JobServer:
         """
         decode_str = base64.b64decode(task_config).decode("utf-8")
         config: dict = json.loads(decode_str)
+        config.update({"run_config": {"storage": JobServer.config.ray_storage}})
 
         task_id = config.get("task_id", None)
         if JobServer.get_job_status(task_id) is not None:
@@ -153,8 +154,10 @@ class JobServer:
             str: job_id of the resumed job.
         """
         decode_str = base64.b64decode(task_config).decode("utf-8")
-        config = json.loads(decode_str)
-        config["resume"] = True
+        config: dict = json.loads(decode_str)
+        config.update(
+            {"resume": True, "run_config": {"storage": JobServer.config.ray_storage}}
+        )
 
         submission_id = JobServer.client.submit_job(
             entrypoint=f"python runner.py --config '{json.dumps(config)}'",
